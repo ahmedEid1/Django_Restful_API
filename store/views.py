@@ -10,9 +10,17 @@ def index(request):
     return render(request, 'store/product_list.html', context)
 
 
+def show(request, id):
+    return render(request, 'store/product.html',
+                  {'product': Product.objects.get(id=id)})
+
+
 def cart(request):
-    return None
-
-
-def show(request):
-    return None
+    context = {
+        'items': [],
+        'subtotal': 1.0,
+        'tax_rate': int(ShoppingCart.TAX_RATE * 100.0),
+        'tax_total': 2.0,
+        'total': 3.0,
+    }
+    return render(request, 'store/cart.html', context)
