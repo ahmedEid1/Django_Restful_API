@@ -28,5 +28,7 @@ urlpatterns = [
     path('products/<int:id>', store.views.show, name='show-product'),
 
     path('api/products', store.api_views.ProductList.as_view()),
+    path('api/products/new', store.api_views.ProductCreate.as_view()),
+    path('api/products/<int:id>/destroy', store.api_views.ProductDestroy.as_view()),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
