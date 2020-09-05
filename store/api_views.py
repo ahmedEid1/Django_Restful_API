@@ -82,6 +82,7 @@ class ProductRetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
         return response
 
 
+
 class ProductStats(GenericAPIView):
     lookup_field = 'id'
     serializer_class = ProductStateSerializer
