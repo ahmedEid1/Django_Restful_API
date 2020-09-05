@@ -1,12 +1,14 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView,\
+    RetrieveUpdateDestroyAPIView, GenericAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.exceptions import ValidationError
 from django.core.cache import cache
+from rest_framework.response import Response
 
-from store.serializers import ProductSerializer
+from store.serializers import ProductSerializer, ProductStateSerializer
 from store.models import Product
 
 
@@ -80,3 +82,21 @@ class ProductRetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
         return response
 
 
+class ProductStats(GenericAPIView):
+    lookup_field = 'id'
+    serializer_class = ProductStateSerializer
+    queryset = Product.objects.all()
+
+    def get(self, request, format=None, id=None):
+        obj = self.get_object()
+        serializer = ProductStateSerializer(
+            {
+                'stats': {
+                    '2020-06-17': [50, 20, 5],
+                    '2020-07-10': [50, 20, 5],
+                    '2020-05-05': [582, 27, 55],
+
+                }
+            }
+        )
+        return Response(serializer.data)

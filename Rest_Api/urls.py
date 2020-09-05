@@ -30,5 +30,5 @@ urlpatterns = [
     path('api/products', store.api_views.ProductList.as_view()),
     path('api/products/new', store.api_views.ProductCreate.as_view()),
     path('api/products/<int:id>', store.api_views.ProductRetrieveUpdateDestroy.as_view()),
-
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('api/products/<int:id>/stats', store.api_views.ProductStats.as_view()),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

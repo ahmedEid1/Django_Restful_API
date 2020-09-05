@@ -31,7 +31,7 @@ class Product(models.Model):
 
     def current_price(self):
         if self.is_on_sale():
-            discounted_price = self.price * (1 - self.DISCOUNT_RATE)
+            discounted_price = float(self.price) * (1 - self.DISCOUNT_RATE)
             return round(discounted_price, 2)
         return self.get_rounded_price()
 
