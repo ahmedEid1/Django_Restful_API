@@ -1,6 +1,9 @@
 from rest_framework.test import APITestCase
+import os.path
+from django.conf import settings
 
 from store.models import Product
+
 
 
 class ProductCreateTeatCase(APITestCase):
@@ -58,3 +61,53 @@ class ProductListTestCase(APITestCase):
             len(response.data['results']),
             products_count
         )
+
+
+class ProductUpdateTestCase(APITestCase):
+    def test_update_product(self):
+        product_id = Product.objects.first().id
+        response = self.client.put(
+            '/api/products/{}'.format(product_id),
+            {
+                'name': 'new updated product',
+                'description': 'nothing newsssssssssssssssssssssssssssssssssssssssssssssssss',
+                'price': 256.5
+            },
+            format='json'
+                          )
+        print(response)
+        updated = Product.objects.get(id=product_id)
+
+        self.assertEqual(updated.name, 'new updated product')
+
+    def test_upload_product_photo(self):
+        product = Product.objects.first()
+        product_photo = Product.photo
+        new_photo_path = os.path.join(settings.MEDIA_ROOT, 'products', 'vitamin-multi.jpg')
+
+        with open(new_photo_path, 'rb') as photo_data:
+            response = self.client.patch(
+                '/api/products/{}'.format(product.id),
+                {
+                    'photo': photo_data
+                },
+                format='multipart'
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.data['photo'], product_photo)
+
+        try:
+            updated = Product.objects.get(id=product.id)
+            # remove .jpg
+            new_photo_path = os.path.join(settings.MEDIA_ROOT, 'products', 'vitamin-multi')
+            self.assertTrue(
+                updated.photo.path.startswith(new_photo_path)
+            )
+        finally:
+            # remove the newly uploaded photo
+            os.remove(updated.photo.path)
+
+
+
+
