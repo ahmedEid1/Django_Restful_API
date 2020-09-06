@@ -23,3 +23,38 @@ class ProductCreateTeatCase(APITestCase):
             self.assertEqual(response.data[attr], expected_val)
         self.assertEqual(response.data['is_on_sale'], False)
         self.assertEqual(response.data['current_price'], float(new_product['price']))
+
+
+class ProductDestroyTestCase(APITestCase):
+    def test_destroy_product(self):
+        initial_product_count = Product.objects.count()
+        product_id = Product.objects.first().id
+        self.client.delete('/api/products/{}'.format(product_id))
+
+        self.assertEqual(
+            Product.objects.count(),
+            initial_product_count - 1
+        )
+
+        self.assertRaises(
+            Product.DoesNotExist,
+            Product.objects.get,
+            id=product_id
+        )
+
+
+class ProductListTestCase(APITestCase):
+    def test_list_products(self):
+        products_count = Product.objects.count()
+        response = self.client.get('/api/products')
+
+        self.assertIsNone(response.data['next'])
+        self.assertIsNone(response.data['previous'])
+        self.assertEqual(
+            response.data['count'],
+            products_count
+        )
+        self.assertEqual(
+            len(response.data['results']),
+            products_count
+        )
